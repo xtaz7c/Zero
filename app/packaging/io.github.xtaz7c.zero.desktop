@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Zero
+Comment=Lightweight Linux system assistant
+Exec=zero
+Icon=io.github.xtaz7c.zero
+Terminal=false
+Categories=System;Utility;
+StartupNotify=true
