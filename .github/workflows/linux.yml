@@ -75,18 +75,14 @@ jobs:
         run: |
           set -euo pipefail
           BIN="target/release/zero"
-          OUT="${RUNNER_TEMP:-/tmp}/zero-smoke.png"
-          xvfb-run -a -s "-screen 0 1280x720x24" bash -c '
-            set -euo pipefail
-            "$1" &
-            app_pid=$!
-            trap "kill $app_pid 2>/dev/null || true" EXIT
-            sleep 3
-            import -window root "$2"
-            test -f "$2"
-            test "$(stat -c%s "$2")" -gt 1000
-            file "$2"
-          ' _ "$BIN" "$OUT"
+          set +e
+          timeout --signal=TERM --kill-after=2s 8s xvfb-run -a -s "-screen 0 1280x720x24" "$BIN"
+          status=$?
+          set -e
+          if [ "$status" -ne 124 ]; then
+            echo "Expected the GUI application to remain running for 8 seconds; exit status: $status"
+            exit 1
+          fi
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
