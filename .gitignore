@@ -1,0 +1,27 @@
+# Build
+app/target/
+**/target/
+*.d
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Runtime
+settings.json
+*.log
+
+# Craft / agent leftovers (não fazem parte do app)
+craft.json
+feed.json
+usage.json
+build-activity.log
+capture/
+checks/
+inbox/
+investigation.cany/
+pinned/
+app/debug/
+app/shots/
