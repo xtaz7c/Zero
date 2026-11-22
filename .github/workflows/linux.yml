@@ -111,7 +111,7 @@ jobs:
           test -x squashfs-root/AppRun
           test -x squashfs-root/usr/bin/zero
           set +e
-          timeout --signal=TERM --kill-after=2s 8s xvfb-run -a -s "-screen 0 1280x720x24" "$APPIMAGE_FILE"
+          APPIMAGE_EXTRACT_AND_RUN=1 timeout --signal=TERM --kill-after=2s 8s xvfb-run -a -s "-screen 0 1280x720x24" "$APPIMAGE_FILE"
           status=$?
           set -e
           if [ "$status" -ne 124 ]; then
