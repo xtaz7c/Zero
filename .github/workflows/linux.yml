@@ -7,6 +7,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing GitHub Release tag to attach the Linux binary to
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -24,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.sha }}
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -79,11 +86,12 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Prepare release asset
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         run: cp target/release/zero target/release/zero-linux-x86_64
       - name: Attach Linux binary to GitHub Release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.release_tag }}
           files: app/target/release/zero-linux-x86_64
           fail_on_unmatched_files: true
