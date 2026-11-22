@@ -24,7 +24,7 @@ env:
 jobs:
   build-and-package:
     name: Build & package (Ubuntu x86_64)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: app
@@ -50,6 +50,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: app
+
+      - name: Tests
+        run: cargo test --all-targets
 
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
@@ -101,8 +104,20 @@ jobs:
             --desktop-file packaging/io.github.xtaz7c.zero.desktop \
             --icon-file assets/logo.png \
             --output appimage
-          APPIMAGE_FILE="$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
+          APPIMAGE_FILE="$(find . -maxdepth 1 -type f -name '*.AppImage' ! -name 'linuxdeploy.AppImage' -print -quit)"
           test -n "$APPIMAGE_FILE"
+          chmod +x "$APPIMAGE_FILE"
+          "$APPIMAGE_FILE" --appimage-extract
+          test -x squashfs-root/AppRun
+          test -x squashfs-root/usr/bin/zero
+          set +e
+          timeout --signal=TERM --kill-after=2s 8s xvfb-run -a -s "-screen 0 1280x720x24" "$APPIMAGE_FILE"
+          status=$?
+          set -e
+          if [ "$status" -ne 124 ]; then
+            echo "Expected the packaged AppImage to remain running for 8 seconds; exit status: $status"
+            exit 1
+          fi
           mv "$APPIMAGE_FILE" dist/zero-linux-x86_64.AppImage
           chmod +x dist/zero-linux-x86_64.AppImage
           test -s dist/zero-linux-x86_64.AppImage
@@ -130,6 +145,10 @@ jobs:
           EOF
           dpkg-deb --root-owner-group --build "$ROOT" "dist/zero-linux-x86_64.deb"
           dpkg-deb --info dist/zero-linux-x86_64.deb
+          mkdir -p dist/deb-check
+          dpkg-deb --extract dist/zero-linux-x86_64.deb dist/deb-check
+          test -x dist/deb-check/usr/bin/zero
+          ldd dist/deb-check/usr/bin/zero
 
       - name: Prepare Flatpak source
         run: |
@@ -147,6 +166,15 @@ jobs:
           flatpak-builder --user --install-deps-from=flathub --force-clean --repo=dist/flatpak-repo dist/flatpak-build packaging/flatpak.yml
           flatpak build-bundle dist/flatpak-repo dist/zero-linux-x86_64.flatpak io.github.xtaz7c.zero
           test -s dist/zero-linux-x86_64.flatpak
+          flatpak install --user --noninteractive --bundle dist/zero-linux-x86_64.flatpak
+          set +e
+          timeout --signal=TERM --kill-after=2s 8s xvfb-run -a -s "-screen 0 1280x720x24" flatpak run --user --command=zero io.github.xtaz7c.zero
+          status=$?
+          set -e
+          if [ "$status" -ne 124 ]; then
+            echo "Expected the installed Flatpak app to remain running for 8 seconds; exit status: $status"
+            exit 1
+          fi
 
       - name: Prepare portable binary and checksums
         run: |
