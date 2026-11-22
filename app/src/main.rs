@@ -32,10 +32,19 @@ struct Stored {
 }
 
 fn settings_path() -> PathBuf {
-    std::env::current_exe()
-        .ok()
-        .and_then(|p| p.parent().map(|d| d.join("settings.json")))
-        .unwrap_or_else(|| PathBuf::from("settings.json"))
+    let config_dir = std::env::var_os("XDG_CONFIG_HOME")
+        .map(PathBuf::from)
+        .or_else(|| {
+            std::env::var_os("HOME")
+                .map(|home| PathBuf::from(home).join(".config"))
+        })
+        .unwrap_or_else(|| {
+            std::env::current_dir()
+                .unwrap_or_else(|_| PathBuf::from("."))
+                .join(".config")
+        });
+
+    config_dir.join("zero").join("settings.json")
 }
 
 fn draw_gear_icon(ui: &egui::Ui, rect: Rect, color: Color32) {
@@ -121,7 +130,12 @@ impl ZeroApp {
             auto_update: Some(self.auto_update),
         };
         if let Ok(json) = serde_json::to_string_pretty(&stored) {
-            let _ = std::fs::write(settings_path(), json);
+            let path = settings_path();
+            if let Some(parent) = path.parent() {
+                if std::fs::create_dir_all(parent).is_ok() {
+                    let _ = std::fs::write(path, json);
+                }
+            }
         }
     }
 

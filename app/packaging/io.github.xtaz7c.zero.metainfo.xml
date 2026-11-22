@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.xtaz7c.zero</id>
+  <name>Zero</name>
+  <summary>Lightweight Linux system assistant</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Proprietary</project_license>
+  <description>
+    <p>Zero displays system information and provides practical suggestions for Linux system maintenance.</p>
+  </description>
+  <launchable type="desktop-id">io.github.xtaz7c.zero.desktop</launchable>
+  <provides>
+    <id>io.github.xtaz7c.zero.desktop</id>
+  </provides>
+  <releases>
+    <release version="1.0.0" date="2026-11-22"/>
+  </releases>
+</component>
