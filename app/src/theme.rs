@@ -10,11 +10,9 @@ pub fn theme_visuals() -> egui::Visuals {
     v.dark_mode = true;
     v.panel_fill = BG_COLOR;
     v.window_fill = BG_COLOR;
-    v.extreme_bg_color = BG_COLOR;
+    v.extreme_bg_color = Color32::from_rgb(0x12, 0x12, 0x12); // TextEdit etc.
     v.faint_bg_color = BG_COLOR;
-    v.text_edit_bg_color = Some(Color32::from_rgb(0x12, 0x12, 0x12));
     v.override_text_color = Some(TEXT_COLOR);
-    v.weak_text_color = Some(MUTED_COLOR);
     v.selection.bg_fill = HIGHLIGHT_COLOR.gamma_multiply(0.45);
     v.selection.stroke = egui::Stroke::new(1.0, HIGHLIGHT_COLOR);
     v.widgets.noninteractive.fg_stroke = egui::Stroke::new(1.0, TEXT_COLOR);
