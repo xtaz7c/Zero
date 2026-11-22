@@ -2,9 +2,9 @@ use std::process::Command;
 
 #[derive(Clone, Default)]
 pub struct ProcInfo {
-    pub name: String,
     pub mem_mb: f32,
-    pub pid: String,
+    pub pid: u32,
+    pub name: String,
 }
 
 #[derive(Clone, Default)]
@@ -85,22 +85,22 @@ fn top_memory_procs(limit: usize) -> Vec<ProcInfo> {
         Some(o) => o,
         None => return Vec::new(),
     };
-    let mut list = Vec::new();
+    let mut list = Vec::with_capacity(limit);
     for line in out.lines().skip(1) {
         let parts: Vec<&str> = line.split_whitespace().collect();
         if parts.len() < 3 {
             continue;
         }
-        let pid = parts[0].to_string();
+        let pid: u32 = parts[0].parse().unwrap_or(0);
         let rss_kb: f32 = parts[1].parse().unwrap_or(0.0);
         let name = parts[2..].join(" ");
-        if name.starts_with('[') || name.is_empty() {
+        if name.starts_with('[') || name.is_empty() || pid == 0 {
             continue;
         }
         list.push(ProcInfo {
-            name,
             mem_mb: rss_kb / 1024.0,
             pid,
+            name,
         });
         if list.len() >= limit {
             break;
