@@ -1,0 +1,3 @@
+# Config local do crate Zero (CI e dev)
+[term]
+verbose = false
