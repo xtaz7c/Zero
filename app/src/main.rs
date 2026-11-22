@@ -19,6 +19,8 @@ use theme::{theme_visuals, BG_COLOR, HIGHLIGHT_COLOR, MUTED_COLOR, TEXT_COLOR};
 use update::{check_github_update, version_newer, APP_VERSION};
 
 const FRAMES_BEFORE_SHOT: u64 = 90;
+/// Limite de mensagens no histórico do chat (evita crescimento ilimitado de RAM).
+const CHAT_CAP: usize = 50;
 
 #[derive(Default, Serialize, Deserialize)]
 struct Stored {
@@ -105,7 +107,7 @@ impl ZeroApp {
             update_check_rx: None,
             last_update_check: None,
             input: String::new(),
-            chat: Vec::new(),
+            chat: Vec::with_capacity(CHAT_CAP),
             focus_input: true,
         }
     }
@@ -123,6 +125,14 @@ impl ZeroApp {
     fn refresh_sys(&mut self) {
         self.sys = gather_sysinfo();
         self.suggestions = generate_suggestions(&self.sys);
+    }
+
+    /// Mantém só as últimas `CHAT_CAP` mensagens.
+    fn trim_chat(&mut self) {
+        if self.chat.len() > CHAT_CAP {
+            let drain = self.chat.len() - CHAT_CAP;
+            self.chat.drain(0..drain);
+        }
     }
 
     fn start_update_check(&mut self) {
@@ -177,6 +187,7 @@ impl ZeroApp {
             return;
         }
         self.chat.push(("user".into(), t.to_string()));
+        self.trim_chat();
         let lower = t.to_lowercase();
         let reply = if lower.contains("atualiz") || lower.contains("update") || lower.contains("upgrade") {
             let base = match self.sys.pkg_manager.as_str() {
@@ -247,6 +258,7 @@ impl ZeroApp {
             )
         };
         self.chat.push(("zero".into(), reply));
+        self.trim_chat();
     }
 
     fn header_ui(&mut self, ui: &mut egui::Ui) {
@@ -406,7 +418,8 @@ impl ZeroApp {
         let s = self.lang.strings();
         let greeting = s.greeting.replace("{}", &self.sys.username);
         painter.text(Pos2::new(center.x, center.y + r + 26.0), egui::Align2::CENTER_TOP, greeting, egui::FontId::proportional(19.0), TEXT_COLOR);
-        ui.ctx().request_repaint();
+        // ~60 fps; evita repaint sem limite.
+        ui.ctx().request_repaint_after(Duration::from_millis(16));
     }
 }
 
