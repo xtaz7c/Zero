@@ -1,6 +1,6 @@
 app-id: io.github.xtaz7c.zero
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 command: zero
 finish-args:
@@ -21,3 +21,5 @@ modules:
     sources:
       - type: dir
         path: ../dist/flatpak-source
+
+appstream-compose: false
