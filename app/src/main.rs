@@ -7,6 +7,9 @@ mod update;
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::mpsc::{channel, Receiver, TryRecvError};
+
+type UpdateCheckResult = Result<(String, Option<String>), String>;
+type UpdateCheckReceiver = Receiver<UpdateCheckResult>;
 use std::time::{Duration, Instant};
 
 use eframe::egui::{self, Color32, Pos2, Rect, Sense, Vec2};
@@ -59,10 +62,10 @@ fn draw_update_icon(ui: &egui::Ui, rect: Rect, color: Color32) {
     let painter = ui.painter();
     let c = rect.center();
     let r = rect.width() * 0.36;
-    painter.circle_stroke(c, r, egui::Stroke::new(2.2, color));
+    painter.circle_stroke(c, r, egui::Stroke::new(2.2_f32, color));
     let tip = c + Vec2::new(0.0, -r * 0.55);
-    painter.line_segment([c + Vec2::new(-r * 0.35, -r * 0.1), tip], egui::Stroke::new(2.2, color));
-    painter.line_segment([c + Vec2::new(r * 0.35, -r * 0.1), tip], egui::Stroke::new(2.2, color));
+    painter.line_segment([c + Vec2::new(-r * 0.35, -r * 0.1), tip], egui::Stroke::new(2.2_f32, color));
+    painter.line_segment([c + Vec2::new(r * 0.35, -r * 0.1), tip], egui::Stroke::new(2.2_f32, color));
 }
 
 struct ZeroApp {
@@ -76,7 +79,7 @@ struct ZeroApp {
     suggestions: Vec<String>,
     update_status: String,
     update_available: Option<String>,
-    update_check_rx: Option<Receiver<Result<(String, Option<String>), String>>>,
+    update_check_rx: Option<UpdateCheckReceiver>,
     last_update_check: Option<Instant>,
     input: String,
     chat: Vec<(String, String)>,
@@ -411,8 +414,8 @@ impl ZeroApp {
             painter.circle_filled(center, r + expand, Color32::from_rgba_unmultiplied(0xE9, 0x1E, 0x63, alpha));
         }
         painter.circle_filled(center, r, HIGHLIGHT_COLOR.gamma_multiply(0.9));
-        painter.circle_stroke(center, r, egui::Stroke::new(2.4, Color32::from_rgb(0xFF, 0x5C, 0x8A)));
-        painter.circle_stroke(center, r * 0.7, egui::Stroke::new(1.4, Color32::from_rgba_unmultiplied(255, 255, 255, 80)));
+        painter.circle_stroke(center, r, egui::Stroke::new(2.4_f32, Color32::from_rgb(0xFF, 0x5C, 0x8A)));
+        painter.circle_stroke(center, r * 0.7, egui::Stroke::new(1.4_f32, Color32::from_rgba_unmultiplied(255, 255, 255, 80)));
         painter.circle_filled(center, 5.5, Color32::WHITE);
         let s = self.lang.strings();
         let greeting = s.greeting.replace("{}", &self.sys.username);

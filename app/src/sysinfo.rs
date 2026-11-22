@@ -110,21 +110,20 @@ fn top_memory_procs(limit: usize) -> Vec<ProcInfo> {
 }
 
 pub fn gather_sysinfo() -> SysInfo {
-    let mut info = SysInfo::default();
-
-    info.username = std::env::var("USER")
-        .or_else(|_| std::env::var("USERNAME"))
-        .unwrap_or_else(|_| "usuário".into());
-
-    info.hostname = read_file("/etc/hostname")
-        .map(|s| s.trim().to_string())
-        .or_else(|| run_cmd("hostname", &[]))
-        .unwrap_or_else(|| "localhost".into());
-
-    info.kernel = read_file("/proc/version")
-        .and_then(|v| v.split_whitespace().nth(2).map(|s| s.to_string()))
-        .or_else(|| run_cmd("uname", &["-r"]))
-        .unwrap_or_else(|| "?".into());
+    let mut info = SysInfo {
+        username: std::env::var("USER")
+            .or_else(|_| std::env::var("USERNAME"))
+            .unwrap_or_else(|_| "usuário".into()),
+        hostname: read_file("/etc/hostname")
+            .map(|s| s.trim().to_string())
+            .or_else(|| run_cmd("hostname", &[]))
+            .unwrap_or_else(|| "localhost".into()),
+        kernel: read_file("/proc/version")
+            .and_then(|v| v.split_whitespace().nth(2).map(|s| s.to_string()))
+            .or_else(|| run_cmd("uname", &["-r"]))
+            .unwrap_or_else(|| "?".into()),
+        ..SysInfo::default()
+    };
 
     if let Some(os_release) = read_file("/etc/os-release") {
         for line in os_release.lines() {
@@ -142,10 +141,8 @@ pub fn gather_sysinfo() -> SysInfo {
         let mut model = None;
         let mut cores = 0u32;
         for line in cpuinfo.lines() {
-            if line.starts_with("model name") || line.starts_with("Hardware") {
-                if model.is_none() {
-                    model = line.split(':').nth(1).map(|s| s.trim().to_string());
-                }
+            if (line.starts_with("model name") || line.starts_with("Hardware")) && model.is_none() {
+                model = line.split(':').nth(1).map(|s| s.trim().to_string());
             }
             if line.starts_with("processor") {
                 cores += 1;

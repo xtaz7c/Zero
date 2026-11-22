@@ -14,11 +14,11 @@ pub fn theme_visuals() -> egui::Visuals {
     v.faint_bg_color = BG_COLOR;
     v.override_text_color = Some(TEXT_COLOR);
     v.selection.bg_fill = HIGHLIGHT_COLOR.gamma_multiply(0.45);
-    v.selection.stroke = egui::Stroke::new(1.0, HIGHLIGHT_COLOR);
-    v.widgets.noninteractive.fg_stroke = egui::Stroke::new(1.0, TEXT_COLOR);
-    v.widgets.inactive.fg_stroke = egui::Stroke::new(1.0, HIGHLIGHT_COLOR);
-    v.widgets.hovered.fg_stroke = egui::Stroke::new(1.5, HIGHLIGHT_COLOR);
-    v.widgets.active.fg_stroke = egui::Stroke::new(2.0, HIGHLIGHT_COLOR);
-    v.widgets.open.fg_stroke = egui::Stroke::new(1.0, HIGHLIGHT_COLOR);
+    v.selection.stroke = egui::Stroke::new(1.0_f32, HIGHLIGHT_COLOR);
+    v.widgets.noninteractive.fg_stroke = egui::Stroke::new(1.0_f32, TEXT_COLOR);
+    v.widgets.inactive.fg_stroke = egui::Stroke::new(1.0_f32, HIGHLIGHT_COLOR);
+    v.widgets.hovered.fg_stroke = egui::Stroke::new(1.5_f32, HIGHLIGHT_COLOR);
+    v.widgets.active.fg_stroke = egui::Stroke::new(2.0_f32, HIGHLIGHT_COLOR);
+    v.widgets.open.fg_stroke = egui::Stroke::new(1.0_f32, HIGHLIGHT_COLOR);
     v
 }
