@@ -47,7 +47,7 @@ fn draw_gear_icon(ui: &egui::Ui, rect: Rect, color: Color32) {
         let d = Vec2::new(a.cos(), a.sin());
         painter.rect_filled(
             Rect::from_center_size(c + d * r, Vec2::new(tooth_w, tooth_h)),
-            egui::CornerRadius::same(1),
+            egui::Rounding::same(1.0),
             color,
         );
     }
@@ -127,7 +127,6 @@ impl ZeroApp {
         self.suggestions = generate_suggestions(&self.sys);
     }
 
-    /// Mantém só as últimas `CHAT_CAP` mensagens.
     fn trim_chat(&mut self) {
         if self.chat.len() > CHAT_CAP {
             let drain = self.chat.len() - CHAT_CAP;
@@ -418,7 +417,6 @@ impl ZeroApp {
         let s = self.lang.strings();
         let greeting = s.greeting.replace("{}", &self.sys.username);
         painter.text(Pos2::new(center.x, center.y + r + 26.0), egui::Align2::CENTER_TOP, greeting, egui::FontId::proportional(19.0), TEXT_COLOR);
-        // ~60 fps; evita repaint sem limite.
         ui.ctx().request_repaint_after(Duration::from_millis(16));
     }
 }
@@ -439,16 +437,16 @@ impl App for ZeroApp {
         }
         egui::TopBottomPanel::top("header")
             .exact_height(48.0)
-            .frame(egui::Frame::NONE.fill(BG_COLOR).inner_margin(egui::Margin::symmetric(4, 4)))
+            .frame(egui::Frame::default().fill(BG_COLOR).inner_margin(egui::Margin::symmetric(4.0, 4.0)))
             .show(ctx, |ui| { self.header_ui(ui); });
         if self.show_settings {
             egui::SidePanel::left("settings")
                 .default_width(280.0)
-                .frame(egui::Frame::NONE.fill(Color32::from_rgb(0x0A, 0x0A, 0x0A)).inner_margin(12.0))
+                .frame(egui::Frame::default().fill(Color32::from_rgb(0x0A, 0x0A, 0x0A)).inner_margin(12.0))
                 .show(ctx, |ui| { self.settings_ui(ui); });
         }
         egui::CentralPanel::default()
-            .frame(egui::Frame::NONE.fill(BG_COLOR).inner_margin(16.0))
+            .frame(egui::Frame::default().fill(BG_COLOR).inner_margin(16.0))
             .show(ctx, |ui| {
                 let wide = ui.available_width() > 900.0;
                 if wide {
