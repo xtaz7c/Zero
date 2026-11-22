@@ -1,0 +1,23 @@
+app-id: io.github.xtaz7c.zero
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: zero
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --talk-name=org.freedesktop.portal.Desktop
+modules:
+  - name: zero
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 zero /app/bin/zero
+      - install -Dm644 io.github.xtaz7c.zero.desktop /app/share/applications/io.github.xtaz7c.zero.desktop
+      - install -Dm644 io.github.xtaz7c.zero.png /app/share/icons/hicolor/64x64/apps/io.github.xtaz7c.zero.png
+      - install -Dm644 io.github.xtaz7c.zero.metainfo.xml /app/share/metainfo/io.github.xtaz7c.zero.metainfo.xml
+    sources:
+      - type: dir
+        path: ../../dist/flatpak-source
