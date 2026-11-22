@@ -1,0 +1,14 @@
+{
+  "id": "unk_4cdd3b9f1abcaf70",
+  "revision": 2,
+  "question": "A API de pixels do egui 0.37 permite capturar o framebuffer para a opção --screenshot?",
+  "severity": "high",
+  "domain": "build",
+  "status": "resolved",
+  "probes": [
+    "grep no fonte do egui no registry local após cargo fetch"
+  ],
+  "evidence_for": [],
+  "evidence_against": [],
+  "resolution": "Não — ler o framebuffer durante App::ui não funciona (o contexto GLX não está current antes da fase de draw; a leitura retornava sempre a cor (8,8,8,180)). A API oficial Context::request_screenshot (egui 0.37) captura na fase de draw: eframe chama egui_glow::Painter::read_screen_rgba depois do paint; o app agora usa request_screenshot com callback e shots/now.png foi salvo e verificado."
+}

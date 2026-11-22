@@ -1,0 +1,48 @@
+{
+  "revision": 11,
+  "brief": {
+    "question": "O que devo construir para o app Zero: quais funcionalidades, interface e comportamento para atender à solicitação: app desktop com eframe/egui chamado Zero com interface simples, configurações (idioma, adição de modelos, atualização automática via IA), chat principal onde todas as IAs podem conversar para trabalhar juntas, e aplicar uma logo simples criada com a Craft.",
+    "purpose": "own_or_authorized",
+    "targets": [
+      "/home/hamber/Documentos/Craft Anything/crie-um-app-chamado-zero/app"
+    ],
+    "constraints": [
+      "Rust com eframe/egui; Cargo.toml no app/; cargo build até passar; mudanças só dentro de app/; logo via Craft (experimental_image_generate) salva em app/assets/logo.png; rodar com --screenshot para verificar; usar core_person_ask só se uma escolha mudar o resultado."
+    ],
+    "done_when": "App Zero compila (cargo build em app/), tem: tela inicial com logo, configurações (idioma, adição de modelos, atualização automática por IA), chat principal onde os modelos adicionados conversam com o usuário; foto salva quando rodado com --screenshot; logo em app/assets/logo.png."
+  },
+  "plan": [
+    {
+      "title": "Adicionar a linha das IAs no chat (todas as habilitadas)",
+      "status": "done"
+    },
+    {
+      "title": "Setas rolam o chat quando o campo de digitação não tem foco",
+      "status": "done"
+    },
+    {
+      "title": "Esc fecha as configurações; Tab entre campos",
+      "status": "done"
+    },
+    {
+      "title": "Nome acessível no ícone de configurações (foco por tecla)",
+      "status": "done"
+    },
+    {
+      "title": "Rodar --screenshot e verificar a foto salva",
+      "status": "done"
+    },
+    {
+      "title": "Rodar rebuild_check e corrigir o que pedir",
+      "status": "done"
+    },
+    {
+      "title": "Corrigir: sem chave de API o chat responde com aviso local em vez dos 401/400",
+      "status": "done"
+    }
+  ],
+  "hypotheses": [],
+  "findings": [],
+  "handoff": "Zero (app/): corrigido o erro reportado. Sem chave de API, modelos de API pública (OpenAI/Gemini/Claude) respondem no chat com mensagem local de aviso (traduções nos 6 idiomas) em vez do 401/400 cru; Local (Ollama, qwen3:8b) funciona de verdade. Build: cargo build passa; --screenshot salva 920x650 não em branco (verificado); rebuild_check passou. settings.json em app/target/debug/. Próximos: confirmar o comportamento do chat com uma mensagem teste se pedir.",
+  "updated": "2026-11-20T19:06:54Z"
+}

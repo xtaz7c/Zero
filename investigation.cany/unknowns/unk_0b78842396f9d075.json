@@ -1,0 +1,14 @@
+{
+  "id": "unk_0b78842396f9d075",
+  "revision": 2,
+  "question": "A tela :1 do X está acessível a partir da sessão shell para rodar o app com --screenshot?",
+  "severity": "medium",
+  "domain": "environment",
+  "status": "resolved",
+  "probes": [
+    "execução do binário ./target/release/zero --screenshot"
+  ],
+  "evidence_for": [],
+  "evidence_against": [],
+  "resolution": "Sim — o app abriu na tela :1 (DISPLAY=:1) e salva o PNG: roteiro executado './target/debug/zero --screenshot shots/now.png' → shots/now.png (920x650, verificado com file/decodificador: fundo escuro + logotipo Z visível na região superior esquerda)."
+}
