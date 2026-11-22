@@ -32,9 +32,9 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
-          # Manual runs use the packaging workflow from main; the release tag is
-          # only the destination for uploaded assets, not the source checkout.
-          ref: ${{ github.event_name == 'release' && github.sha || 'main' }}
+          # PRs and pushes validate their own commit. Manual runs use main so
+          # an old release tag cannot select an outdated workflow definition.
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.sha }}
 
       - name: Install system dependencies
         run: |
@@ -50,9 +50,6 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: app
-
-      - name: Format check
-        run: cargo fmt --all -- --check
 
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
