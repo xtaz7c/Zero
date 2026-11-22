@@ -144,7 +144,7 @@ jobs:
       - name: Build Flatpak
         run: |
           set -euo pipefail
-          flatpak-builder --force-clean --repo=dist/flatpak-repo dist/flatpak-build packaging/flatpak.yml
+          flatpak-builder --user --install-deps-from=flathub --force-clean --repo=dist/flatpak-repo dist/flatpak-build packaging/flatpak.yml
           flatpak build-bundle dist/flatpak-repo dist/zero-linux-x86_64.flatpak io.github.xtaz7c.zero
           test -s dist/zero-linux-x86_64.flatpak
 
