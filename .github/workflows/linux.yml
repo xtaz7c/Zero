@@ -29,6 +29,8 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: app
+      - name: Format sources
+        run: cargo fmt --all
       - name: Format check
         run: cargo fmt --all -- --check
       - name: Clippy
