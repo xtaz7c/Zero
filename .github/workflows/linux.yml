@@ -148,7 +148,16 @@ jobs:
           mkdir -p dist/deb-check
           dpkg-deb --extract dist/zero-linux-x86_64.deb dist/deb-check
           test -x dist/deb-check/usr/bin/zero
+          cmp target/release/zero dist/deb-check/usr/bin/zero
           ldd dist/deb-check/usr/bin/zero
+          set +e
+          timeout --signal=TERM --kill-after=2s 8s xvfb-run -a -s "-screen 0 1280x720x24" dist/deb-check/usr/bin/zero
+          status=$?
+          set -e
+          if [ "$status" -ne 124 ]; then
+            echo "Expected the executable extracted from the Debian package to remain running for 8 seconds; exit status: $status"
+            exit 1
+          fi
 
       - name: Prepare Flatpak source
         run: |
